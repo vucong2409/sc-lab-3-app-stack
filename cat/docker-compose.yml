@@ -12,9 +12,6 @@ services:
     restart: always
     env_file:
       - cat-fe.env
-    depends_on:
-      be:
-        condition: service_healthy
   be:
     profiles:
       - "backend"
