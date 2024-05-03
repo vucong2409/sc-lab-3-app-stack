@@ -4,6 +4,8 @@ services:
       - "proxy"
       - "appstack"
     image: nginx:1.25.5-alpine
+    ports:
+      - 8080:8080
   fe:
     profiles:
       - "frontend"
