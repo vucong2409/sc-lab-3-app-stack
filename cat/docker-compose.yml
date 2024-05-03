@@ -1,0 +1,29 @@
+services:
+  proxy:
+    profiles:
+      - "proxy"
+      - "appstack"
+    image: nginx:1.25.5-alpine
+  fe:
+    profiles:
+      - "frontend"
+      - "appstack"
+    image: 339712946908.dkr.ecr.ap-southeast-1.amazonaws.com/cat-fe:latest
+    restart: always
+    env_file:
+      - cat-fe.env
+    depends_on:
+      be:
+        condition: service_healthy
+  be:
+    profiles:
+      - "backend"
+      - "appstack"
+    image: 339712946908.dkr.ecr.ap-southeast-1.amazonaws.com/cat-be:latest
+    restart: always
+    env_file:
+      - cat-be.env
+    healthcheck:
+      test: ["CMD", "curl", "localhost:8000/api/healthcheck"]
+      timeout: 20s
+      retries: 10
