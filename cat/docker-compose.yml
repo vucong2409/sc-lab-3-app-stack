@@ -4,6 +4,8 @@ services:
       - "proxy"
       - "appstack"
     image: nginx:1.25.5-alpine
+    volumes:
+      - ./resources/nginx.conf:/etc/nginx/nginx.conf
     ports:
       - 8080:8080
   fe:
