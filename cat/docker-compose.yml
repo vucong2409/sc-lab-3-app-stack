@@ -33,6 +33,5 @@ services:
       - "migration"
     image: 339712946908.dkr.ecr.ap-southeast-1.amazonaws.com/cat-be:latest
     command: flask db upgrade
-    restart: always
     env_file:
       - cat-be.env

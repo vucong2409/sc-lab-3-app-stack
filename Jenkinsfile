@@ -12,21 +12,30 @@ pipeline {
 
     stages {
         stage('Preconfig') {
-            sh 'sudo systemctl start docker'
-            sh 'sudo docker login ${IMAGE_REGISTRY} --username AWS --password $(aws ecr get-login-password --region ap-southeast-1)'
-        }
-        stage('Run migration') {
-            dir('./app-stack/cat') {
-                sh 'source /opt/inject-ssm-secrets/bin/activate'
-                sh 'python /opt/inject-ssm-secrets/inject-ssm-secrets.py --path /cat-be --output-type file --output-file cat-be.env'
-                sh 'sudo docker compose --profile migration up'
+            steps {
+                sh 'sudo systemctl start docker'
+                sh 'sudo docker login ${IMAGE_REGISTRY} --username AWS --password $(aws ecr get-login-password --region ap-southeast-1)'
             }
         }
-        stage('Change image tag') {
-
+        stage('Run migration') {
+            steps {
+                dir('./cat') {
+                    sh '''
+                        source /opt/inject-ssm-secrets/bin/activate
+                        export AWS_DEFAULT_REGION=ap-southeast-1
+                        python /opt/inject-ssm-secrets/inject-ssm-secrets.py --path /cat-be --output-type file --output-file cat-be.env
+                    '''
+                    sh 'sudo docker compose --profile migration up'
+                }
+            }
         }
+        // stage('Change image tag') {
+
+        // }
         stage('Run instance refresh') {
-            sh 'aws autoscaling start-instance-refresh --auto-scaling-group-name ${ASG_NAME}'
+            steps {
+                sh 'aws autoscaling start-instance-refresh --auto-scaling-group-name ${ASG_NAME}'
+            }
         }
     }
 }
