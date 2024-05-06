@@ -51,11 +51,14 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'git-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     sh '''
-                        git config user.name "Release Bot"
-                        git config user.email "jenkins@local.mail"
-                        git add ./cat/docker-compose.yml
-                        git commit -m "Bump cat-fe to $CAT_FE_VERSION and cat-be to $CAT_BE_VERSION"
-                        git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vucong2409/sc-lab-3-app-stack main
+                        if ! git diff --exit-code -s cat/docker-compose.yml
+                        then
+                            git config user.name "Release Bot"
+                            git config user.email "jenkins@local.mail"
+                            git add ./cat/docker-compose.yml
+                            git commit -m "Bump cat-fe to $CAT_FE_VERSION and cat-be to $CAT_BE_VERSION"
+                            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/vucong2409/sc-lab-3-app-stack main
+                        fi
                     '''
                 }
             }
