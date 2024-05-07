@@ -31,4 +31,4 @@ services:
       POSTGRES_PASSWORD: sonar
       POSTGRES_DB: sonar
     volumes:
-      - /opt/sonarqube/sonarqube/logs:/var/lib/postgresql/data
+      - /opt/sonarqube/postgresql:/var/lib/postgresql/data
